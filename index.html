@@ -97,6 +97,7 @@ ring.rotation.x=-Math.PI/2;ring.position.y=-3.19;scene.add(ring);
 
 /* مواد */
 const M={
+ gold:new T.MeshBasicMaterial({color:0xa47716,side:T.DoubleSide}),
  paint:new T.MeshBasicMaterial({color:0x4d2d0b,side:T.DoubleSide}),
  camo:new T.MeshBasicMaterial({color:0x38200b,side:T.DoubleSide}),
  brown:new T.MeshBasicMaterial({color:0x1d1007,side:T.DoubleSide}),
@@ -130,6 +131,7 @@ function buildJet(){
  featureRig=rig;
  const add=(m,mirror)=>{m.castShadow=true;g.add(m);if(mirror){const c=m.clone();c.position.x*=-1;c.scale.x*=-1;g.add(c);}return m;};
  // جسم الطائرة
+ const nosePanel=new T.Mesh(new T.BoxGeometry(.34,.035,2.4),M.gold);nosePanel.position.set(0,.53,7.0);nosePanel.rotation.y=.04;g.add(nosePanel);
  const fuselage=new T.Mesh(loft([[9.6,.02,.02,.02,.05],[9,.25,.18,.14,.05],[7.8,.55,.35,.28,.08],[6.2,.9,.5,.4,.1],[4,1.25,.7,.5,.12],[1,1.7,.75,.55,.1],[-3,1.85,.75,.55,.1],[-7,1.6,.65,.5,.08],[-9,1.45,.55,.45,.05],[-9.1,.1,.1,.1,.05]],28,2.6),M.paint);add(fuselage);
  // شريط بني ترابي منخفض على جانبي البدن ضمن نمط التمويه.
  [-1,1].forEach(side=>{const band=new T.Mesh(new T.BoxGeometry(.16,.08,4.6),M.brown);band.position.set(side*1.2,.72,-1.15);band.rotation.y=side*.08;g.add(band);});
@@ -138,12 +140,27 @@ function buildJet(){
  const w=new T.Mesh(plan(wingShape,.1).rotateX(Math.PI/2),M.paint);w.position.y=-.02;add(w,true);
  // بطن الجناح الرمادي السماوي للاندماج مع لون السماء عند النظر من الأسفل.
  const wu=new T.Mesh(plan(wingShape,.035).rotateX(Math.PI/2),M.under);wu.position.y=-.14;add(wu,true);
- // خطوط متعرجة بنية تكسر الشكل الهندسي من الأعلى.
+ // تمويه صحراوي متكسر: بقع بنية كبيرة مع شرائط مائلة خردلية كما في المرجع.
+ function camoPatch(x,y,z,w,l,angle,mat=M.brown){
+   const patch=new T.Mesh(new T.BoxGeometry(w,.045,l),mat);patch.position.set(x,y,z);patch.rotation.y=angle;g.add(patch);return patch;
+ }
+ // بقع طويلة على ظهر البدن تكسر الخط المستقيم للطائرة.
+ camoPatch(0,.84,2.0,.62,2.5,-.16);
+ camoPatch(-.38,.82,-.65,.58,2.2,.42);
+ camoPatch(.42,.82,-3.05,.72,2.7,-.28);
+ camoPatch(-.28,.72,-5.7,.5,1.8,.22);
+ // كتل بنية متداخلة على الأجنحة والذيل.
  [-1,1].forEach(side=>{
-   for(let i=0;i<4;i++){
-     const stripe=new T.Mesh(new T.BoxGeometry(.18,.035,1.25),M.brown);
-     stripe.position.set(side*(2.2+i*.76),.1,-1.8+i*.72);stripe.rotation.y=side*(.42+(i%2)*.16);g.add(stripe);
-   }
+   const patches=[
+     [2.05,-.02,-1.65,.42,2.25,side*.5],
+     [3.0,.02,-2.95,.5,1.9,-side*.34],
+     [4.12,.03,-4.0,.38,1.25,side*.62],
+     [1.52,.72,.85,.42,1.65,-side*.36]
+   ];
+   patches.forEach(p=>camoPatch(side*p[0],p[1],p[2],p[3],p[4],p[5]));
+   // شريط خردلي فاتح داخل بعض البقع ليوحي بتمويه الطائرات الصحراوية القديمة.
+   camoPatch(side*2.75,.12,-1.55,.12,1.55,-side*.55,M.camo);
+   camoPatch(side*4.0,.12,-3.3,.1,1.0,side*.48,M.camo);
  });
  // المثبتات الأفقية
  const s=new T.Mesh(plan([[1.4,-4.6],[4.3,-8],[4.3,-9.3],[1.4,-8.6]],.08).rotateX(Math.PI/2),M.paint);s.position.y=.05;add(s,true);
