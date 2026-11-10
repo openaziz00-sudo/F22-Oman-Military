@@ -1,60 +1,419 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#071923">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#071923">
 <title>صقور عُمان | Air Combat</title>
 <style>
-:root{--gold:#d7b66b;--glass:rgba(5,18,27,.68);--line:rgba(210,231,232,.2)}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071923;color:#eff7f4;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}canvas{display:block}#hud{position:fixed;inset:0;pointer-events:none;z-index:2}.top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.brand,.stats,.help{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px);border-radius:14px;padding:10px 14px;box-shadow:0 8px 30px #0003}.brand strong{display:block;color:var(--gold);letter-spacing:1px;font-size:14px}.brand small{color:#a8bfbd;font-size:10px;letter-spacing:2px}.stats{display:flex;gap:18px;direction:rtl}.stat span{display:block;color:#9db5b4;font-size:10px}.stat b{font-size:18px;font-variant-numeric:tabular-nums}.health{width:120px;height:6px;background:#314449;border-radius:8px;margin-top:5px;overflow:hidden}.health i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#d65d4d,#e4c66e);transition:width .2s}.bottom{position:absolute;bottom:18px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:end}.hint{background:var(--glass);border:1px solid var(--line);padding:9px 12px;border-radius:12px;color:#c1d1ce;font-size:11px;max-width:250px}.fire{pointer-events:auto;border:1px solid #f2d58d;background:linear-gradient(145deg,#c79b43,#755426);color:white;font-weight:800;border-radius:50%;width:82px;height:82px;box-shadow:0 0 28px #d4aa4b55;touch-action:none;font-size:13px}.fire:active{transform:scale(.95);filter:brightness(1.2)}#overlay{position:fixed;inset:0;z-index:5;display:grid;place-items:center;background:linear-gradient(145deg,#06131ceF,#0b2935df);backdrop-filter:blur(8px);padding:24px}#overlay.hidden{display:none}.panel{width:min(460px,100%);padding:28px;border:1px solid #c9b16b55;border-radius:22px;background:linear-gradient(145deg,#102b35,#081a24);text-align:center;box-shadow:0 30px 100px #0008}.crest{font-size:38px;color:var(--gold)}h1{margin:5px 0;color:#f0d38c;font-size:27px}p{color:#b4c9c6;line-height:1.7;font-size:14px}.primary{border:0;border-radius:12px;background:linear-gradient(90deg,#d7b66b,#a77a37);color:#111c20;font-weight:900;padding:14px 24px;font-size:15px;width:100%;margin-top:12px}.secondary{border:1px solid #8aa5a2;background:transparent;color:#e5efec;border-radius:10px;padding:10px 16px;margin-top:10px}.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font-size:11px;color:#9fb5b1;margin-top:16px}.controls span{border:1px solid #ffffff22;border-radius:7px;padding:5px 8px}#toast{position:fixed;z-index:4;top:90px;left:50%;transform:translateX(-50%);background:#102b35dd;border:1px solid var(--gold);border-radius:20px;padding:8px 16px;color:#f5d88e;font-size:12px;opacity:0;transition:opacity .25s;pointer-events:none}#toast.show{opacity:1}#crosshair{position:fixed;left:50%;top:44%;width:30px;height:30px;transform:translate(-50%,-50%);border:1px solid #e7d18c88;border-radius:50%;pointer-events:none;z-index:1}#crosshair:before,#crosshair:after{content:"";position:absolute;background:#e7d18c88}#crosshair:before{width:1px;height:44px;left:14px;top:-8px}#crosshair:after{height:1px;width:44px;top:14px;left:-8px}
-@media(max-width:600px){.top{top:8px;left:8px;right:8px}.brand{padding:8px 10px}.stats{gap:10px;padding:8px 10px}.stat b{font-size:15px}.health{width:82px}.bottom{bottom:12px;left:10px;right:10px}.hint{max-width:190px;font-size:10px}.fire{width:72px;height:72px}}
+:root{--gold:#d7b66b;--glass:rgba(5,18,27,.68);--line:rgba(210,231,232,.2)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#071923;color:#eff7f4;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+canvas{display:block;touch-action:none}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:2}
+.top{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.brand,.stats{background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(12px);border-radius:14px;padding:10px 14px;box-shadow:0 8px 30px #0003}
+.brand strong{display:block;color:var(--gold);letter-spacing:1px;font-size:14px}
+.brand small{color:#a8bfbd;font-size:10px;letter-spacing:2px}
+.stats{display:flex;gap:18px}
+.stat span{display:block;color:#9db5b4;font-size:10px}
+.stat b{font-size:18px;font-variant-numeric:tabular-nums}
+.health{width:120px;height:6px;background:#314449;border-radius:8px;margin-top:5px;overflow:hidden}
+.health i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#d65d4d,#e4c66e);transition:width .2s}
+.bottom{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:16px;right:16px;display:flex;justify-content:space-between;align-items:end}
+.hint{background:var(--glass);border:1px solid var(--line);padding:9px 12px;border-radius:12px;color:#c1d1ce;font-size:11px;max-width:250px;line-height:1.6}
+.fire{pointer-events:auto;border:1px solid #f2d58d;background:linear-gradient(145deg,#c79b43,#755426);color:#fff;font-weight:800;border-radius:50%;width:82px;height:82px;box-shadow:0 0 28px #d4aa4b55;touch-action:none;font-size:13px;font-family:inherit}
+.fire:active,.fire.on{transform:scale(.95);filter:brightness(1.2)}
+#overlay{position:fixed;inset:0;z-index:5;display:grid;place-items:center;background:linear-gradient(145deg,#06131cef,#0b2935df);backdrop-filter:blur(8px);padding:24px}
+#overlay.hidden{display:none}
+.panel{width:min(460px,100%);padding:28px;border:1px solid #c9b16b55;border-radius:22px;background:linear-gradient(145deg,#102b35,#081a24);text-align:center;box-shadow:0 30px 100px #0008}
+.crest{font-size:38px;color:var(--gold)}
+h1{margin:5px 0;color:#f0d38c;font-size:27px}
+p{color:#b4c9c6;line-height:1.7;font-size:14px}
+.primary{border:0;border-radius:12px;background:linear-gradient(90deg,#d7b66b,#a77a37);color:#111c20;font-weight:900;padding:14px 24px;font-size:15px;width:100%;margin-top:12px;font-family:inherit;cursor:pointer}
+.primary:disabled{opacity:.55;cursor:wait}
+.secondary{border:1px solid #8aa5a2;background:transparent;color:#e5efec;border-radius:10px;padding:10px 16px;margin-top:10px;font-family:inherit;cursor:pointer}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font-size:11px;color:#9fb5b1;margin-top:16px}
+.controls span{border:1px solid #ffffff22;border-radius:7px;padding:5px 8px}
+#toast{position:fixed;z-index:4;top:90px;left:50%;transform:translateX(-50%);background:#102b35dd;border:1px solid var(--gold);border-radius:20px;padding:8px 16px;color:#f5d88e;font-size:12px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+#crosshair{position:fixed;left:0;top:0;width:30px;height:30px;border:1px solid #e7d18c99;border-radius:50%;pointer-events:none;z-index:1;will-change:transform}
+#crosshair:before,#crosshair:after{content:"";position:absolute;background:#e7d18c99}
+#crosshair:before{width:1px;height:44px;left:14px;top:-8px}
+#crosshair:after{height:1px;width:44px;top:14px;left:-8px}
+#flash{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(220,40,30,.65))}
+@media(max-width:600px){.top{top:max(8px,env(safe-area-inset-top));left:8px;right:8px}.brand{padding:8px 10px}.stats{gap:10px;padding:8px 10px}.stat b{font-size:15px}.health{width:82px}.bottom{bottom:max(12px,env(safe-area-inset-bottom));left:10px;right:10px}.hint{max-width:190px;font-size:10px}.fire{width:72px;height:72px}}
 </style></head><body>
-<div id="hud"><div class="top"><div class="brand"><strong>صُقور عُمان</strong><small>ROYAL AIR DEFENCE • FLIGHT SIM</small></div><div class="stats"><div class="stat"><span>النقاط</span><b id="score">00000</b></div><div class="stat"><span>الموجة</span><b id="wave">01</b></div><div class="stat"><span>الصحة</span><b id="hpText">100%</b><div class="health"><i id="hpBar"></i></div></div></div></div><div id="crosshair"></div><div class="bottom"><div class="hint" id="hint">حرّك الهاتف للتوجيه أو اسحب الشاشة. اضغط مطولاً لإطلاق النار.</div><button class="fire" id="fire">إطلاق<br>النار</button></div></div>
-<div id="toast"></div><div id="overlay"><div class="panel"><div class="crest">✦</div><h1 id="title">صقور عُمان</h1><p id="desc">مهمة دفاع جوي فوق بحر عُمان. قُد الطائرة، واجه أسراب المقاتلات المعادية، وحافظ على سلامة طائرتك.</p><button class="primary" id="start">ابدأ المهمة</button><button class="secondary" id="motion">تفعيل تحكم حركة الهاتف</button><div class="controls"><span>سحب الشاشة: توجيه</span><span>WASD / الأسهم</span><span>Space: إطلاق</span></div></div></div>
+<div id="hud">
+  <div class="top">
+    <div class="brand"><strong>صُقور عُمان</strong><small>ROYAL AIR DEFENCE • FLIGHT SIM</small></div>
+    <div class="stats">
+      <div class="stat"><span>النقاط</span><b id="score">00000</b></div>
+      <div class="stat"><span>الموجة</span><b id="wave">01</b></div>
+      <div class="stat"><span>الصحة</span><b id="hpText">100%</b><div class="health"><i id="hpBar"></i></div></div>
+    </div>
+  </div>
+  <div id="crosshair"></div>
+  <div class="bottom"><div class="hint" id="hint"></div><button class="fire" id="fire">إطلاق<br>النار</button></div>
+</div>
+<div id="flash"></div>
+<div id="toast"></div>
+<div id="overlay"><div class="panel">
+  <div class="crest">✦</div>
+  <h1 id="title">صقور عُمان</h1>
+  <p id="desc">مهمة دفاع جوي فوق بحر عُمان. قُد الطائرة، واجه أسراب المقاتلات المعادية، وحافظ على سلامة طائرتك.</p>
+  <button class="primary" id="start" disabled>جارٍ تحميل الطائرة…</button>
+  <button class="secondary" id="motion">تفعيل تحكم حركة الهاتف</button>
+  <div class="controls"><span>سحب الشاشة: توجيه</span><span>WASD / الأسهم</span><span>Space: إطلاق</span></div>
+</div></div>
+
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
-import * as THREE from 'three';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-const $=id=>document.getElementById(id);const scene=new THREE.Scene();scene.background=new THREE.Color(0x8db9c5);scene.fog=new THREE.Fog(0x8db9c5,90,430);
-const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,900);camera.position.set(0,5,13);
-const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;document.body.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xd9f2ff,0x536c4d,2));const sun=new THREE.DirectionalLight(0xffe2b2,2.5);sun.position.set(-40,70,25);sun.castShadow=true;scene.add(sun);
-const sea=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200,1,1),new THREE.MeshStandardMaterial({color:0x176b83,roughness:.48,metalness:.18}));sea.rotation.x=-Math.PI/2;sea.position.y=-8;scene.add(sea);
-// Layered distant haze and sun
-const sunBall=new THREE.Mesh(new THREE.SphereGeometry(8,24,16),new THREE.MeshBasicMaterial({color:0xffe0a3}));sunBall.position.set(-110,85,-310);scene.add(sunBall);
-// User-supplied detailed city pack replaces the procedural islands.
-const cityInstances=[];let cityTemplate=null;const cityLoader=new GLTFLoader();
-cityLoader.load('./assets/city_pack_5.glb',g=>{
-  cityTemplate=g.scene;const bounds=new THREE.Box3().setFromObject(cityTemplate),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
-  cityTemplate.position.sub(center);const fitScale=0.82/Math.max(size.x/54,size.z/55);cityTemplate.scale.setScalar(fitScale);
-  cityTemplate.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material=o.material.clone();o.material.roughness=Math.max(.58,o.material.roughness??.7)}}});
-  const centeredMinY=bounds.min.y-center.y,groundY=-7.5-centeredMinY*fitScale;
-  for(let i=0;i<8;i++){const inst=new THREE.Group();inst.add(cityTemplate.clone(true));inst.position.set((i%2===0?-1:1)*(42+(i%3)*17),groundY,-95-i*105);scene.add(inst);cityInstances.push(inst)}
-},undefined,e=>{console.error('City GLB load failed',e);toast('تعذر تحميل حزمة المدينة؛ تحقق من وجود الملف داخل assets.');});
-// Cloud clusters
-for(let i=0;i<42;i++){let group=new THREE.Group();let x=(Math.random()-.5)*300,y=22+Math.random()*48,z=-Math.random()*400;for(let j=0;j<4;j++){let m=new THREE.Mesh(new THREE.SphereGeometry(2+Math.random()*3,10,8),new THREE.MeshBasicMaterial({color:0xe5f0ec,transparent:true,opacity:.22}));m.position.set(j*2.5,Math.random()*2,Math.random()*2);group.add(m)}group.position.set(x,y,z);scene.add(group)}
-const player=new THREE.Group();player.position.set(0,2,0);scene.add(player);let aircraft=null;const loader=new GLTFLoader();let modelReady=false;
-loader.load('./assets/f22_oman.glb',g=>{aircraft=g.scene;const box=new THREE.Box3().setFromObject(aircraft),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());aircraft.position.sub(center);const max=Math.max(size.x,size.y,size.z);aircraft.scale.setScalar(6.8/max);aircraft.rotation.y=Math.PI;aircraft.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material= o.material.clone();o.material.roughness=Math.max(.42,o.material.roughness??.6)}}});player.add(aircraft);modelReady=true;},undefined,e=>{console.error('Aircraft GLB load failed',e);toast('تعذر تحميل نموذج الطائرة؛ تحقق من تشغيل اللعبة عبر خادم محلي.');});
-// Engine glow
-for(const x of [-.65,.65]){let glow=new THREE.Mesh(new THREE.SphereGeometry(.16,12,8),new THREE.MeshBasicMaterial({color:0x66dfff}));glow.position.set(x,-.05,.85);player.add(glow)}
-const bullets=[],enemies=[],particles=[];let running=false,score=0,hp=100,wave=1,spawnTimer=1.5,fireTimer=0,elapsed=0,damageFlash=0;let aimX=0,aimY=0,fireHeld=false,motionEnabled=false,orientation={x:0,y:0};
-const matBullet=new THREE.MeshBasicMaterial({color:0x9ef4ff});function shoot(){const b=new THREE.Mesh(new THREE.SphereGeometry(.11,8,8),matBullet);b.position.copy(player.position).add(new THREE.Vector3(0,0,-2.5));b.userData={vel:new THREE.Vector3(aimX*.5,aimY*.5,-95)};scene.add(b);bullets.push(b)}
-function enemy(){const group=new THREE.Group();const body=new THREE.Mesh(new THREE.ConeGeometry(.9,3.7,5),new THREE.MeshStandardMaterial({color:0x5b6870,metalness:.55,roughness:.5}));body.rotation.x=-Math.PI/2;group.add(body);const wing=new THREE.Mesh(new THREE.BoxGeometry(4.5,.12,1.2),new THREE.MeshStandardMaterial({color:0x394a51,metalness:.4}));group.add(wing);group.position.set((Math.random()-.5)*34,Math.random()*7-1,-100-Math.random()*35);group.rotation.y=Math.PI;group.userData={speed:18+wave*1.5,hp:2,phase:Math.random()*6.28,fire:2+Math.random()*2};scene.add(group);enemies.push(group)}
-function burst(pos,color=0xffa64d){for(let i=0;i<22;i++){let m=new THREE.Mesh(new THREE.SphereGeometry(.12+Math.random()*.13,6,5),new THREE.MeshBasicMaterial({color,transparent:true}));m.position.copy(pos);m.userData={v:new THREE.Vector3((Math.random()-.5)*13,Math.random()*12,(Math.random()-.5)*13),life:.65+Math.random()*.6};scene.add(m);particles.push(m)}}
-function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function updateHud(){$('score').textContent=String(score).padStart(5,'0');$('wave').textContent=String(wave).padStart(2,'0');$('hpText').textContent=hp+'%';$('hpBar').style.width=hp+'%'}
-function reset(){for(const a of [...bullets,...enemies,...particles])scene.remove(a);bullets.length=enemies.length=particles.length=0;score=0;hp=100;wave=1;spawnTimer=1;elapsed=0;player.position.set(0,2,0);player.rotation.set(0,0,0);updateHud()}
-function gameOver(){running=false;fireHeld=false;$('title').textContent='انتهت المهمة';$('desc').textContent=`النتيجة: ${score} نقطة — وصلت إلى الموجة ${wave}. أعد المحاولة لتحسين نتيجتك.`;$('start').textContent='إعادة المهمة';$('overlay').classList.remove('hidden')}
-function start(){reset();running=true;$('overlay').classList.add('hidden');toast('ابدأ الاشتباك — راقب الأهداف أمامك')}
-$('start').addEventListener('click',start);
-$('motion').addEventListener('click',async()=>{try{if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){const p=await DeviceOrientationEvent.requestPermission();if(p!=='granted')throw Error('permission denied')}window.addEventListener('deviceorientation',e=>{if(e.gamma==null||e.beta==null)return;orientation.x=THREE.MathUtils.clamp(e.gamma/32,-1,1);orientation.y=THREE.MathUtils.clamp((e.beta-45)/35,-1,1)});motionEnabled=true;$('motion').textContent='تم تفعيل تحكم الحركة';toast('حرّك الهاتف للتوجيه')}catch(e){toast('لم يُسمح بحساس الحركة؛ استخدم السحب باللمس')}});
-const pointer={down:false,x:0,y:0};renderer.domElement.addEventListener('pointerdown',e=>{pointer.down=true;pointer.x=e.clientX;pointer.y=e.clientY;renderer.domElement.setPointerCapture(e.pointerId)});renderer.domElement.addEventListener('pointermove',e=>{if(!pointer.down)return;aimX=THREE.MathUtils.clamp(aimX+(e.clientX-pointer.x)/innerWidth*2.3,-1,1);aimY=THREE.MathUtils.clamp(aimY-(e.clientY-pointer.y)/innerHeight*2.3,-.8,.8);pointer.x=e.clientX;pointer.y=e.clientY});renderer.domElement.addEventListener('pointerup',()=>pointer.down=false);renderer.domElement.addEventListener('pointercancel',()=>pointer.down=false);
-const keys={};addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space'){fireHeld=true;e.preventDefault()}});addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space')fireHeld=false});$('fire').addEventListener('pointerdown',e=>{fireHeld=true;$('fire').setPointerCapture(e.pointerId)});$('fire').addEventListener('pointerup',()=>fireHeld=false);$('fire').addEventListener('pointercancel',()=>fireHeld=false);$('fire').addEventListener('lostpointercapture',()=>fireHeld=false);
-const clock=new THREE.Clock();function tick(){requestAnimationFrame(tick);const dt=Math.min(clock.getDelta(),.04);if(running){elapsed+=dt;if(elapsed>wave*24){wave++;toast('بدأت الموجة '+wave);updateHud()}let kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0),ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);let tx=motionEnabled?orientation.x:aimX,ty=motionEnabled?orientation.y:aimY;let targetX=THREE.MathUtils.clamp(tx+kx*.75,-1,1),targetY=THREE.MathUtils.clamp(ty+ky*.75,-1,1);player.position.x=THREE.MathUtils.damp(player.position.x,targetX*13,3.5,dt);player.position.y=THREE.MathUtils.damp(player.position.y,2+targetY*6,3.5,dt);player.rotation.z=THREE.MathUtils.damp(player.rotation.z,-targetX*.48,5,dt);player.rotation.x=THREE.MathUtils.damp(player.rotation.x,targetY*.16,4,dt);player.rotation.y=THREE.MathUtils.damp(player.rotation.y,-targetX*.12,4,dt);
-fireTimer-=dt;if(fireHeld&&fireTimer<=0){shoot();fireTimer=.13}spawnTimer-=dt;if(spawnTimer<=0){enemy();spawnTimer=Math.max(.65,2.4-wave*.13)+Math.random()*.8}
-for(let i=bullets.length-1;i>=0;i--){let b=bullets[i];b.position.addScaledVector(b.userData.vel,dt);if(b.position.z< -140){scene.remove(b);bullets.splice(i,1);continue}for(let j=enemies.length-1;j>=0;j--){let en=enemies[j];if(b.position.distanceTo(en.position)<2.3){scene.remove(b);bullets.splice(i,1);en.userData.hp--;if(en.userData.hp<=0){burst(en.position);scene.remove(en);enemies.splice(j,1);score+=100;updateHud()}break}}}
-for(let i=enemies.length-1;i>=0;i--){let e=enemies[i];e.position.z+=e.userData.speed*dt;e.position.x+=Math.sin(elapsed*1.6+e.userData.phase)*dt*3;e.userData.fire-=dt;if(e.userData.fire<0&&e.position.z> -18){e.userData.fire=2.5;if(Math.abs(e.position.x-player.position.x)<8&&Math.random()<.5){hp=Math.max(0,hp-8);burst(player.position,0xff553f);updateHud();if(hp<=0){gameOver();break}}}if(e.position.z>7){scene.remove(e);enemies.splice(i,1);hp=Math.max(0,hp-12);updateHud();if(hp<=0){gameOver();break}}else if(e.position.distanceTo(player.position)<2.3){burst(e.position);scene.remove(e);enemies.splice(i,1);hp=Math.max(0,hp-18);updateHud();if(hp<=0){gameOver();break}}}
-for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.position.addScaledVector(p.userData.v,dt);p.userData.v.y-=8*dt;p.userData.life-=dt;p.scale.multiplyScalar(.985);p.material.opacity=Math.max(0,p.userData.life);if(p.userData.life<=0){scene.remove(p);particles.splice(i,1)}}
-// Ocean and city districts drift to create continuous forward flight
-sea.position.z=(elapsed*24)%240;for(const district of cityInstances){district.position.z+=24*dt;if(district.position.z>45)district.position.z-=840}
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+
+/* ───────── إعدادات قابلة للتعديل ───────── */
+const CFG={
+  jetLength:6.8,            // طول الطائرة داخل اللعبة
+  jetBaseY:2.5, jetRangeY:4.5, jetRangeX:13,
+  speed:24,                 // سرعة تحرك البيئة (طيران للأمام)
+  seaY:-8, cityGroundY:-7.8,
+  cityScaleXZ:5.2,          // حجم المدينة أفقياً
+  cityScaleY:7.3,           // ارتفاع المباني (تضخيم رأسي لتظهر من الجو)
+  cityTiles:4, cityGap:30
+};
+const $=id=>document.getElementById(id);
+const clamp=THREE.MathUtils.clamp;
+const isTouch=matchMedia('(pointer:coarse)').matches;
+$('hint').textContent=isTouch?'اسحب الشاشة للتوجيه • اضغط مطولاً على زر إطلاق النار':'WASD أو الأسهم للتوجيه • Space لإطلاق النار • أو اسحب بالفأرة';
+
+/* ───────── المشهد والكاميرا ───────── */
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x8db9c5);
+scene.fog=new THREE.Fog(0x8db9c5,90,460);
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,900);
+camera.position.set(0,5,13);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.15;
+document.body.appendChild(renderer.domElement);
+const canvas=renderer.domElement;
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+const maxAniso=Math.min(4,renderer.capabilities.getMaxAnisotropy());
+
+// ملاحظة: تم إلغاء الظلال — كاميرا الظل الافتراضية كانت ±5 وحدات فقط فلا تعطي أي ظل مرئي وتكلّف أداءً.
+scene.add(new THREE.HemisphereLight(0xd9f2ff,0x536c4d,2));
+const sun=new THREE.DirectionalLight(0xffe2b2,2.5);
+sun.position.set(-40,70,25);
+scene.add(sun);
+
+/* ───────── البحر (بملمس يتحرك ليُشعر بالسرعة) ───────── */
+function makeSeaTexture(){
+  const c=document.createElement('canvas');c.width=c.height=256;
+  const x=c.getContext('2d');x.fillStyle='#176b83';x.fillRect(0,0,256,256);
+  for(let i=0;i<420;i++){
+    const px=Math.random()*256,py=Math.random()*256,len=8+Math.random()*26,dy=(Math.random()-.5)*3;
+    x.strokeStyle=`rgba(190,235,240,${.05+Math.random()*.12})`;x.lineWidth=1+Math.random()*1.5;
+    for(const ox of [-256,0,256])for(const oy of [-256,0,256]){x.beginPath();x.moveTo(px+ox,py+oy);x.lineTo(px+ox+len,py+oy+dy);x.stroke()}
+  }
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(70,70);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=maxAniso;return t;
 }
-const camTarget=new THREE.Vector3(player.position.x*.34,player.position.y+2.2,player.position.z+10.5);camera.position.lerp(camTarget,1-Math.exp(-4*dt));camera.lookAt(player.position.x*.45,player.position.y+.1,-22);renderer.render(scene,camera)}tick();
+const seaTex=makeSeaTexture();
+const sea=new THREE.Mesh(new THREE.PlaneGeometry(1200,1200),new THREE.MeshStandardMaterial({map:seaTex,roughness:.5,metalness:.1}));
+sea.rotation.x=-Math.PI/2;sea.position.y=CFG.seaY;scene.add(sea);
+
+const sunBall=new THREE.Mesh(new THREE.SphereGeometry(8,24,16),new THREE.MeshBasicMaterial({color:0xffe0a3,fog:false}));
+sunBall.position.set(-110,85,-310);scene.add(sunBall);
+
+/* ───────── سحب (تتحرك مع الطيران) ───────── */
+const cloudMat=new THREE.MeshBasicMaterial({color:0xe5f0ec,transparent:true,opacity:.22,depthWrite:false});
+const cloudGeos=[2.2,3.2,4.2].map(r=>new THREE.SphereGeometry(r,10,8));
+const clouds=[];
+for(let i=0;i<42;i++){
+  const g=new THREE.Group();
+  for(let j=0;j<4;j++){const m=new THREE.Mesh(cloudGeos[(Math.random()*3)|0],cloudMat);m.position.set(j*2.5,Math.random()*2,Math.random()*2);g.add(m)}
+  g.position.set((Math.random()-.5)*300,22+Math.random()*48,-Math.random()*440+40);
+  scene.add(g);clouds.push(g);
+}
+
+/* ───────── المدينة: دمج الشبكات حسب المادة + حذف LOD المكرر ───────── */
+const cityTiles=[];let citySpan=1;
+function f32(a){const n=a.itemSize,out=new Float32Array(a.count*n);for(let i=0;i<a.count;i++){out[i*n]=a.getX(i);out[i*n+1]=a.getY(i);if(n>2)out[i*n+2]=a.getZ(i)}return new THREE.BufferAttribute(out,n)}
+function buildCity(root){
+  // الملف يحوي LOD00 و LOD01 معاً — كانا يُرسمان فوق بعض (تداخل + ضعف الأداء). نُبقي LOD00 فقط.
+  const kill=[];root.traverse(o=>{if(/^LOD0[1-9]/.test(o.name)||/downres/i.test(o.name))kill.push(o)});
+  kill.forEach(o=>o.parent&&o.parent.remove(o));
+  root.updateMatrixWorld(true);
+  const groups=new Map();
+  root.traverse(o=>{
+    if(!o.isMesh||Array.isArray(o.material)||!o.geometry.attributes.position)return;
+    const src=o.geometry,g=new THREE.BufferGeometry();
+    g.setAttribute('position',f32(src.attributes.position));
+    if(src.attributes.normal)g.setAttribute('normal',f32(src.attributes.normal));
+    g.setAttribute('uv',src.attributes.uv?f32(src.attributes.uv):new THREE.BufferAttribute(new Float32Array(src.attributes.position.count*2),2));
+    if(src.index)g.setIndex(src.index.clone());
+    else{const n=src.attributes.position.count,idx=new Uint32Array(n);for(let i=0;i<n;i++)idx[i]=i;g.setIndex(new THREE.BufferAttribute(idx,1))}
+    if(!g.attributes.normal)g.computeVertexNormals();
+    g.applyMatrix4(o.matrixWorld);
+    const key=o.material.uuid;if(!groups.has(key))groups.set(key,{mat:o.material,geos:[]});groups.get(key).geos.push(g);
+  });
+  const merged=[],box=new THREE.Box3();
+  for(const {mat,geos} of groups.values()){
+    const g=geos.length>1?BufferGeometryUtils.mergeGeometries(geos,false):geos[0];
+    if(!g)continue;geos.forEach(x=>{if(x!==g)x.dispose()});
+    g.computeBoundingBox();box.union(g.boundingBox);
+    mat.roughness=Math.max(.58,mat.roughness??.7);mat.metalness=0;
+    if(mat.map)mat.map.anisotropy=maxAniso;
+    if(/alphathresh/i.test(mat.name)){mat.transparent=false;mat.alphaTest=.5;mat.depthWrite=true}
+    merged.push({g,mat});
+  }
+  if(!merged.length)throw Error('no city meshes');
+  const size=box.getSize(new THREE.Vector3()),c=box.getCenter(new THREE.Vector3());
+  const M=new THREE.Matrix4().makeScale(CFG.cityScaleXZ,CFG.cityScaleY,CFG.cityScaleXZ).multiply(new THREE.Matrix4().makeTranslation(-c.x,-box.min.y,-c.z));
+  const tile=new THREE.Group();
+  for(const {g,mat} of merged){g.applyMatrix4(M);g.computeBoundingSphere();tile.add(new THREE.Mesh(g,mat))}
+  const width=size.x*CFG.cityScaleXZ,depth=size.z*CFG.cityScaleXZ;
+  citySpan=CFG.cityTiles*(depth+CFG.cityGap);
+  for(let i=0;i<CFG.cityTiles;i++){
+    const inst=tile.clone();
+    inst.position.set((i%2?1:-1)*(width/2+6),CFG.cityGroundY,-40-i*(depth+CFG.cityGap));
+    scene.add(inst);cityTiles.push(inst);
+  }
+}
+new GLTFLoader().load('./assets/city_pack_5.glb',g=>{try{buildCity(g.scene)}catch(e){console.error(e);toast('تعذر معالجة نموذج المدينة')}},undefined,e=>{console.error('City GLB load failed',e);toast('تعذر تحميل المدينة؛ شغّل اللعبة عبر خادم محلي أو GitHub Pages.')});
+
+/* ───────── الطائرة ───────── */
+const player=new THREE.Group();player.position.set(0,CFG.jetBaseY,0);scene.add(player);
+const flames=[];let jetReady=false;
+function addEngineGlow(tailZ,y,span){
+  const flameGeo=new THREE.ConeGeometry(.16,1.3,10);flameGeo.rotateX(Math.PI/2); // الرأس باتجاه +Z (خلف الطائرة)
+  for(const sx of [-1,1]){
+    const x=sx*span*.05,z=tailZ*.75;
+    const core=new THREE.Mesh(new THREE.SphereGeometry(.14,12,8),new THREE.MeshBasicMaterial({color:0x9fe9ff}));core.position.set(x,y,z);player.add(core);
+    const fl=new THREE.Mesh(flameGeo,new THREE.MeshBasicMaterial({color:0x66dfff,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false}));
+    fl.position.set(x,y,z+.65);player.add(fl);flames.push(fl);
+  }
+}
+function mountAircraft(model){
+  // مقدمة النموذج الأصلي على محور -X (تحققت من الهندسة): نديره -90° حول Y لتصبح المقدمة نحو -Z.
+  const box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
+  model.position.sub(center);                      // التوسيط داخل المجموعة (قبل التحجيم)
+  const holder=new THREE.Group();holder.add(model);
+  holder.scale.setScalar(CFG.jetLength/size.x);    // طول الطائرة على X
+  holder.rotation.y=-Math.PI/2;
+  model.traverse(o=>{if(o.isMesh&&o.material){o.material=o.material.clone();o.material.roughness=Math.max(.42,o.material.roughness??.6);o.frustumCulled=false}});
+  player.add(holder);
+  const bb=new THREE.Box3().setFromObject(holder),h=bb.max.y-bb.min.y;
+  addEngineGlow(bb.max.z,bb.min.y+h*.25,bb.max.x-bb.min.x);
+}
+function buildFallbackJet(){
+  const mat=new THREE.MeshStandardMaterial({color:0x6b7a82,metalness:.4,roughness:.5});
+  const body=new THREE.Mesh(new THREE.ConeGeometry(.6,6,6),mat);body.rotation.x=-Math.PI/2;body.position.z=0;player.add(body);
+  const wing=new THREE.Mesh(new THREE.BoxGeometry(5,.12,2),mat);wing.position.z=.9;player.add(wing);
+  for(const s of [-1,1]){const f=new THREE.Mesh(new THREE.BoxGeometry(.1,1.1,1),mat);f.position.set(s*.5,.6,2.3);f.rotation.z=s*.25;player.add(f)}
+  addEngineGlow(3,-.1,5);
+}
+function jetFinished(ok){
+  jetReady=true;$('start').disabled=false;$('start').textContent=ok?'ابدأ المهمة':'ابدأ المهمة (نموذج مبسّط)';
+}
+if(location.protocol==='file:')toast('افتح اللعبة عبر خادم (مثل GitHub Pages) وليس مباشرة من الملف.');
+new GLTFLoader().load('./assets/f22_oman.glb',g=>{try{mountAircraft(g.scene);jetFinished(true)}catch(e){console.error(e);buildFallbackJet();jetFinished(false)}},
+  xhr=>{if(xhr.total)$('start').textContent=`جارٍ تحميل الطائرة… ${Math.round(xhr.loaded/xhr.total*100)}%`},
+  e=>{console.error('Aircraft GLB load failed',e);toast('تعذر تحميل نموذج الطائرة؛ استُخدم نموذج مبسّط.');buildFallbackJet();jetFinished(false)});
+
+/* ───────── حالة اللعبة ───────── */
+const bullets=[],enemies=[],particles=[];
+let running=false,score=0,hp=100,wave=1,spawnTimer=1.5,fireTimer=0,elapsed=0,damageFlash=0,flicker=0;
+let aimX=0,aimY=0,fireHeld=false;
+const _a=new THREE.Vector3(),_b=new THREE.Vector3(),_c=new THREE.Vector3();
+const bulletGeo=new THREE.SphereGeometry(.11,8,8),bulletMat=new THREE.MeshBasicMaterial({color:0x9ef4ff});
+const partGeo=new THREE.SphereGeometry(1,6,5);
+const enemyBodyMat=new THREE.MeshStandardMaterial({color:0x5b6870,metalness:.55,roughness:.5}),enemyWingMat=new THREE.MeshStandardMaterial({color:0x394a51,metalness:.4});
+const enemyBodyGeo=new THREE.ConeGeometry(.9,3.7,5),enemyWingGeo=new THREE.BoxGeometry(4.5,.12,1.2);
+
+function shoot(){
+  const b=new THREE.Mesh(bulletGeo,bulletMat);
+  b.position.copy(player.position).add(_a.set(0,0,-3.6));
+  b.userData={prev:b.position.clone(),vel:-95};
+  scene.add(b);bullets.push(b);
+}
+function spawnEnemy(){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(enemyBodyGeo,enemyBodyMat);body.rotation.x=-Math.PI/2;g.add(body);
+  g.add(new THREE.Mesh(enemyWingGeo,enemyWingMat));
+  g.position.set((Math.random()-.5)*34,Math.random()*7-1,-100-Math.random()*35);
+  g.rotation.y=Math.PI;
+  g.userData={speed:18+wave*1.5,hp:2,phase:Math.random()*6.28,fire:2+Math.random()*2};
+  scene.add(g);enemies.push(g);
+}
+function burst(pos,color=0xffa64d){
+  for(let i=0;i<22;i++){
+    const m=new THREE.Mesh(partGeo,new THREE.MeshBasicMaterial({color,transparent:true}));
+    m.scale.setScalar(.12+Math.random()*.13);m.position.copy(pos);
+    m.userData={v:new THREE.Vector3((Math.random()-.5)*13,Math.random()*12,(Math.random()-.5)*13),life:.65+Math.random()*.6};
+    scene.add(m);particles.push(m);
+  }
+}
+function dropParticle(i){const p=particles[i];scene.remove(p);p.material.dispose();particles.splice(i,1)}
+let toastT=0;
+function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200)}
+function updateHud(){$('score').textContent=String(score).padStart(5,'0');$('wave').textContent=String(wave).padStart(2,'0');$('hpText').textContent=hp+'%';$('hpBar').style.width=hp+'%'}
+function hurt(n,pos){hp=Math.max(0,hp-n);damageFlash=.6;if(pos)burst(pos,0xff553f);updateHud();if(hp<=0){gameOver();return true}return false}
+function reset(){
+  for(const a of [...bullets,...enemies])scene.remove(a);
+  while(particles.length)dropParticle(particles.length-1);
+  bullets.length=enemies.length=0;
+  score=0;hp=100;wave=1;spawnTimer=1;fireTimer=0;elapsed=0;damageFlash=0;aimX=aimY=0;
+  player.position.set(0,CFG.jetBaseY,0);player.rotation.set(0,0,0);updateHud();
+}
+function gameOver(){
+  running=false;fireHeld=false;$('fire').classList.remove('on');
+  $('title').textContent='انتهت المهمة';
+  $('desc').textContent=`النتيجة: ${score} نقطة — وصلت إلى الموجة ${wave}. أعد المحاولة لتحسين نتيجتك.`;
+  $('start').textContent='إعادة المهمة';$('overlay').classList.remove('hidden');
+}
+function start(){if(!jetReady)return;reset();needCalib=true;running=true;$('overlay').classList.add('hidden');toast('ابدأ الاشتباك — راقب الأهداف أمامك')}
+$('start').addEventListener('click',start);
+
+/* ───────── التحكم: اللمس / الفأرة ───────── */
+let steerId=null,lastX=0,lastY=0;
+canvas.addEventListener('pointerdown',e=>{if(steerId!==null)return;steerId=e.pointerId;lastX=e.clientX;lastY=e.clientY;try{canvas.setPointerCapture(e.pointerId)}catch{}});
+canvas.addEventListener('pointermove',e=>{
+  if(e.pointerId!==steerId||motionOn)return;
+  aimX=clamp(aimX+(e.clientX-lastX)/innerWidth*2.6,-1,1);
+  aimY=clamp(aimY-(e.clientY-lastY)/innerHeight*2.6,-1,1);
+  lastX=e.clientX;lastY=e.clientY;
+});
+const endSteer=e=>{if(e.pointerId===steerId)steerId=null};
+canvas.addEventListener('pointerup',endSteer);canvas.addEventListener('pointercancel',endSteer);canvas.addEventListener('lostpointercapture',endSteer);
+
+/* ───────── التحكم: لوحة المفاتيح ───────── */
+const keys={};
+addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='Space'){fireHeld=true;$('fire').classList.add('on')}
+  if(e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();
+});
+addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space'){fireHeld=false;$('fire').classList.remove('on')}});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;fireHeld=false;$('fire').classList.remove('on')});
+
+/* ───────── التحكم: زر النار ───────── */
+const fireBtn=$('fire');
+fireBtn.addEventListener('pointerdown',e=>{fireHeld=true;fireBtn.classList.add('on');try{fireBtn.setPointerCapture(e.pointerId)}catch{}});
+const stopFire=()=>{fireHeld=false;fireBtn.classList.remove('on')};
+fireBtn.addEventListener('pointerup',stopFire);fireBtn.addEventListener('pointercancel',stopFire);fireBtn.addEventListener('lostpointercapture',stopFire);
+fireBtn.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ───────── التحكم: حساس الحركة (مع دعم الوضع الأفقي والمعايرة) ───────── */
+let motionOn=false,needCalib=true,calib=null,orient={x:0,y:0},gotOrient=false;
+function onOrient(e){
+  if(e.gamma==null||e.beta==null)return;
+  gotOrient=true;
+  const raw=(screen.orientation&&screen.orientation.angle!=null)?screen.orientation.angle:(window.orientation||0);
+  const ang=((raw%360)+360)%360;
+  let tx,ty;
+  switch(ang){
+    case 90:tx=e.beta;ty=-e.gamma;break;
+    case 270:tx=-e.beta;ty=e.gamma;break;
+    case 180:tx=-e.gamma;ty=-e.beta;break;
+    default:tx=e.gamma;ty=e.beta;
+  }
+  if(!calib||calib.ang!==ang||needCalib){calib={x:tx,y:ty,ang};needCalib=false}   // نقطة الصفر = وضع الإمساك الحالي
+  orient.x=clamp((tx-calib.x)/28,-1,1);orient.y=clamp((ty-calib.y)/28,-1,1);
+}
+$('motion').addEventListener('click',async()=>{
+  if(motionOn){removeEventListener('deviceorientation',onOrient);motionOn=false;$('motion').textContent='تفعيل تحكم حركة الهاتف';toast('تم إيقاف تحكم الحركة');return}
+  try{
+    if(typeof DeviceOrientationEvent==='undefined')throw Error('unsupported');
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){const p=await DeviceOrientationEvent.requestPermission();if(p!=='granted')throw Error('denied')}
+    gotOrient=false;needCalib=true;addEventListener('deviceorientation',onOrient);motionOn=true;
+    $('motion').textContent='إيقاف تحكم الحركة';toast('حرّك الهاتف للتوجيه — وضع الإمساك الحالي هو نقطة المنتصف');
+    setTimeout(()=>{if(motionOn&&!gotOrient){removeEventListener('deviceorientation',onOrient);motionOn=false;$('motion').textContent='تفعيل تحكم حركة الهاتف';toast('لا توجد قراءات للحساس (يتطلب HTTPS)؛ استخدم السحب باللمس')}},1500);
+  }catch(err){toast('لم يُسمح بحساس الحركة؛ استخدم السحب باللمس')}
+});
+
+/* ───────── الحلقة الرئيسية ───────── */
+function segDist(p0,p1,c){const d=_a.subVectors(p1,p0),l2=d.lengthSq();let t=l2>0?_b.subVectors(c,p0).dot(d)/l2:0;t=clamp(t,0,1);return _c.copy(p0).addScaledVector(d,t).distanceTo(c)}
+const crossPt=new THREE.Vector3(),flashEl=$('flash'),crossEl=$('crosshair');
+const clock=new THREE.Clock();
+function tick(){
+  requestAnimationFrame(tick);
+  const dt=Math.min(clock.getDelta(),.04);flicker+=dt;
+  for(const f of flames){const s=.8+Math.sin(flicker*40+f.position.x*9)*.18+Math.random()*.12;f.scale.set(1,1,s);}
+  if(running){
+    elapsed+=dt;
+    if(elapsed>wave*24){wave++;toast('بدأت الموجة '+wave);updateHud()}
+
+    // التوجيه
+    if(motionOn){aimX=orient.x;aimY=orient.y}
+    else{
+      const kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0);
+      const ky=(keys.ArrowUp||keys.KeyW?1:0)-(keys.ArrowDown||keys.KeyS?1:0);
+      aimX=clamp(aimX+kx*dt*2.2,-1,1);aimY=clamp(aimY+ky*dt*2.2,-1,1);
+    }
+    player.position.x=THREE.MathUtils.damp(player.position.x,aimX*CFG.jetRangeX,3.5,dt);
+    player.position.y=THREE.MathUtils.damp(player.position.y,CFG.jetBaseY+aimY*CFG.jetRangeY,3.5,dt);
+    player.rotation.z=THREE.MathUtils.damp(player.rotation.z,-aimX*.48,5,dt);
+    player.rotation.x=THREE.MathUtils.damp(player.rotation.x,aimY*.16,4,dt);
+    player.rotation.y=THREE.MathUtils.damp(player.rotation.y,-aimX*.12,4,dt);
+
+    // إطلاق النار والموجات
+    fireTimer-=dt;if(fireHeld&&fireTimer<=0){shoot();fireTimer=.13}
+    spawnTimer-=dt;if(spawnTimer<=0){spawnEnemy();spawnTimer=Math.max(.65,2.4-wave*.13)+Math.random()*.8}
+
+    // الرصاص (فحص تصادم على المسار الكامل لتفادي تخطّي الهدف)
+    for(let i=bullets.length-1;i>=0;i--){
+      const b=bullets[i];b.userData.prev.copy(b.position);b.position.z+=b.userData.vel*dt;
+      if(b.position.z<-140){scene.remove(b);bullets.splice(i,1);continue}
+      for(let j=enemies.length-1;j>=0;j--){
+        const en=enemies[j];
+        if(segDist(b.userData.prev,b.position,en.position)<2.5){
+          scene.remove(b);bullets.splice(i,1);en.userData.hp--;
+          if(en.userData.hp<=0){burst(en.position);scene.remove(en);enemies.splice(j,1);score+=100;updateHud()}
+          break;
+        }
+      }
+    }
+    // الأعداء
+    for(let i=enemies.length-1;i>=0;i--){
+      const e=enemies[i];
+      e.position.z+=e.userData.speed*dt;e.position.x+=Math.sin(elapsed*1.6+e.userData.phase)*dt*3;
+      e.userData.fire-=dt;
+      if(e.userData.fire<0&&e.position.z>-18){
+        e.userData.fire=2.5;
+        if(Math.abs(e.position.x-player.position.x)<8&&Math.random()<.5){if(hurt(8,player.position))break}
+      }
+      if(e.position.z>7){scene.remove(e);enemies.splice(i,1);if(hurt(12))break}
+      else if(e.position.distanceTo(player.position)<2.6){burst(e.position);scene.remove(e);enemies.splice(i,1);if(hurt(18,player.position))break}
+    }
+    // الجسيمات
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];p.position.addScaledVector(p.userData.v,dt);p.userData.v.y-=8*dt;p.userData.life-=dt;
+      p.scale.multiplyScalar(.985);p.material.opacity=Math.max(0,p.userData.life);
+      if(p.userData.life<=0)dropParticle(i);
+    }
+    // حركة البيئة: بحر + مدن + سحب
+    seaTex.offset.y+=dt*CFG.speed/(1200/70);
+    for(const t of cityTiles){t.position.z+=CFG.speed*dt;if(t.position.z>60)t.position.z-=citySpan}
+    for(const c of clouds){c.position.z+=CFG.speed*.55*dt;if(c.position.z>40)c.position.z-=440}
+  }
+  damageFlash=Math.max(0,damageFlash-dt*2.2);flashEl.style.opacity=damageFlash;
+
+  // الكاميرا
+  const camTarget=_a.set(player.position.x*.34,player.position.y+2.2,player.position.z+10.5);
+  camera.position.lerp(camTarget,1-Math.exp(-4*dt));
+  camera.lookAt(player.position.x*.45,player.position.y+.1,-22);
+  camera.updateMatrixWorld();
+
+  // مؤشر التصويب: يُسقَط على نقطة تقاطع مسار الرصاص (خط مستقيم من الطائرة) فيطابق الإصابة فعلاً
+  crossPt.set(player.position.x,player.position.y,-60).project(camera);
+  crossEl.style.transform=`translate(${(crossPt.x*.5+.5)*innerWidth-15}px,${(-crossPt.y*.5+.5)*innerHeight-15}px)`;
+
+  renderer.render(scene,camera);
+}
+tick();
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.8))});
 </script></body></html>
