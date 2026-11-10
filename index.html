@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="عارض ثلاثي الأبعاد لطائرة F-22 بتمويه صحراوي تخيلي مستوحى من الصورة المرجعية.">
+<meta name="description" content="عارض ثلاثي الأبعاد لطائرة F-22 بطلاء عسكري عُماني وعلم سلطنة عُمان وتفاصيل خارجية.">
 <meta name="theme-color" content="#0d1115">
 <meta property="og:type" content="website">
-<meta property="og:title" content="F-22 Raptor — تصور صحراوي تخيلي">
-<meta property="og:description" content="استكشف نموذج F-22 Raptor ثلاثي الأبعاد بتمويه صحراوي تخيلي من جميع الزوايا.">
+<meta property="og:title" content="F-22 Raptor — الطلاء العُماني العسكري">
+<meta property="og:description" content="استكشف نموذج F-22 Raptor ثلاثي الأبعاد من جميع الزوايا داخل عارض ويب مهيأ للهاتف.">
 <meta name="twitter:card" content="summary_large_image">
-<title>F-22 Raptor — تصور صحراوي تخيلي</title>
+<title>F-22 Raptor — الطلاء العُماني العسكري</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d1115;--panel:rgba(20,26,32,.8);--line:#2c3740;--ink:#e6ecf1;--dim:#8c9aa6;--acc:#9ec1de;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -22,8 +22,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:
 header{position:fixed;top:0;inset-inline:0;padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 0 64px;pointer-events:none}
 h1{margin:0;font-size:20px;font-weight:600;letter-spacing:.02em}
 header p{margin:2px 0 0;font-size:12px;color:var(--dim)}
- .credit{font-size:11px;opacity:.82}
- .notice{display:inline-block;margin-top:5px;padding:4px 8px;border:1px solid rgba(214,169,91,.45);border-radius:7px;background:rgba(72,45,19,.42);color:#e2c38d;font-size:11px}
+.credit{font-size:11px;opacity:.82}
 footer{position:fixed;bottom:0;inset-inline:0;padding:0 0 calc(env(safe-area-inset-bottom,0px) + 10px);display:flex;flex-direction:column;gap:8px}
 .row{display:flex;gap:8px;padding:0 12px;overflow-x:auto;scrollbar-width:none}
 .row::-webkit-scrollbar{display:none}
@@ -42,7 +41,7 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 <button id="eye" aria-label="إخفاء أو إظهار الواجهة" title="إخفاء الواجهة">◐</button>
 <noscript><main style="position:fixed;inset:0;padding:32px;background:#0d1115;color:#e6ecf1;font-family:system-ui,sans-serif"><h1>عارض F-22 Raptor ثلاثي الأبعاد</h1><p>يتطلب هذا العارض تفعيل JavaScript لعرض النموذج والتحكم بالكاميرا.</p><p>النموذج من Sketchfab، منشئه andertan، ومرخص بموجب CC-BY-4.0.</p></main></noscript>
 <div id="ui">
-  <header><h1>F-22 Raptor · تصور صحراوي تخيلي</h1><p>تمويه رملي مستوحى من الصورة المرجعية · <span id="tris"></span></p><p class="notice">الطلاء تخيلي؛ F-22 ليست ضمن الطائرات العمانية الفعلية.</p><p class="credit">النموذج: Sketchfab · andertan · CC-BY-4.0</p></header>
+  <header><h1>F-22 Raptor · تمويه عُماني صحراوي</h1><p>رملي وخردلي وبني ترابي مع بطن رمادي سماوي · <span id="tris"></span></p><p class="credit">النموذج: Sketchfab · andertan · CC-BY-4.0</p></header>
   <footer>
     <div class="row" id="views"></div>
     <div class="row feature-row" aria-label="عناصر تفاعلية">
@@ -69,11 +68,8 @@ const renderer=new T.WebGLRenderer({canvas,antialias:true});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 renderer.outputEncoding=T.sRGBEncoding;
 renderer.toneMapping=T.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.35;
-renderer.physicallyCorrectLights=true;
-renderer.useLegacyLights=false;
+renderer.toneMappingExposure=2.25;
 renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=T.PCFSoftShadowMap;
 const scene=new T.Scene();
 scene.background=new T.Color(0x111820);
 scene.fog=new T.Fog(0x111820,45,95);
@@ -89,11 +85,11 @@ panel(-20,25,15,30,12,6);panel(25,10,-20,14,30,4);panel(0,-5,30,40,6,1.5);
 scene.environment=new T.PMREMGenerator(renderer).fromScene(envS,.02).texture;
 
 /* إضاءة */
-const key=new T.DirectionalLight(0xfff2e0,3.0);key.position.set(-10,14,12);key.castShadow=true;
+const key=new T.DirectionalLight(0xfff2e0,4.2);key.position.set(-10,14,12);key.castShadow=true;
 key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-14,right:14,top:14,bottom:-14,near:1,far:60});key.shadow.bias=-.0005;
-const rim=new T.DirectionalLight(0x7fb0ff,1.8);rim.position.set(12,6,-14);
-const fill=new T.DirectionalLight(0xd7e7f5,1.5);fill.position.set(0,18,20);
-scene.add(key,rim,fill,new T.AmbientLight(0xc4d2df,.65),new T.HemisphereLight(0xbad0e4,0x4f463c,.8));
+const rim=new T.DirectionalLight(0x7fb0ff,2.6);rim.position.set(12,6,-14);
+const fill=new T.DirectionalLight(0xd7e7f5,2.2);fill.position.set(0,18,20);
+scene.add(key,rim,fill,new T.AmbientLight(0xc4d2df,1.45),new T.HemisphereLight(0xbad0e4,0x4f463c,1.35));
 const floor=new T.Mesh(new T.CircleGeometry(30,64),new T.ShadowMaterial({opacity:.5}));
 floor.rotation.x=-Math.PI/2;floor.position.y=-3.2;floor.receiveShadow=true;scene.add(floor);
 const ring=new T.Mesh(new T.RingGeometry(13.8,14,96),new T.MeshBasicMaterial({color:0x2c3740,side:T.DoubleSide}));
@@ -266,52 +262,14 @@ function makeRealFeatureRig(root){
  chute.scale.setScalar(.001);root.add(chute);rig.chute=chute;
  return rig;
 }
-function addDesertCamo(mat, seed){
- if(!mat || !mat.isMeshStandardMaterial && !mat.isMeshPhysicalMaterial) return;
- mat.onBeforeCompile=shader=>{
-   if(!shader.fragmentShader.includes('vUv')) return;
-   shader.uniforms.camoSeed={value:seed};
-   const patchCode=`
-     float hash21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-     vec2 cuv=vUv*vec2(3.2,2.1)+camoSeed;
-     float n=hash21(floor(cuv*4.0))*.42+hash21(floor(cuv*8.0))*.18;
-     float broken=smoothstep(.38,.70,n+.22*sin(cuv.x*5.4+cuv.y*2.0));
-     float stripe=smoothstep(.58,.77,sin(cuv.x*7.0+cuv.y*3.2)*.5+.5);
-     vec3 sand=vec3(.58,.39,.18);
-     vec3 mustard=vec3(.69,.52,.25);
-     vec3 earth=vec3(.25,.14,.065);
-     diffuseColor.rgb=mix(diffuseColor.rgb,sand,.24);
-     diffuseColor.rgb=mix(diffuseColor.rgb,mustard,stripe*.16);
-     diffuseColor.rgb=mix(diffuseColor.rgb,earth,broken*.28);
-   `;
-   shader.fragmentShader=shader.fragmentShader.replace('#include <dithering_fragment>',patchCode+'\n#include <dithering_fragment>');
- };
- mat.needsUpdate=true;
-}
 function adoptGLTF(gl){
  const o=gl.scene,b=new T.Box3().setFromObject(gl.scene),sz=b.getSize(new T.Vector3()),ct=b.getCenter(new T.Vector3());
  const k=19/Math.max(sz.x,sz.y,sz.z);const wrap=new T.Group();o.position.sub(ct);wrap.add(o);wrap.scale.setScalar(k);
- wrap.traverse(m=>{if(m.isMesh){
-   m.castShadow=true;m.receiveShadow=true;
-   const mats=Array.isArray(m.material)?m.material:[m.material];
-   const restored=mats.map(x=>{
-     const n=(x.name||'').toLowerCase();
-     const glass=n.includes('glass')||n.includes('screen');
-     const dark=n.includes('dark')||n.includes('black')||n.includes('darkness')||n==='grey';
-     const mat=x.clone();
-     if(mat.color){
-       if(glass) mat.color.set(0x16394b);
-       else if(dark) mat.color.multiplyScalar(.72);
-       else mat.color.multiply(new T.Color(0.68,0.55,0.38));
-     }
-   if('roughness' in mat) mat.roughness=glass?.22:.76;
-   if('metalness' in mat) mat.metalness=glass?.35:.12;
-   if(glass){mat.transparent=true;mat.opacity=.72;mat.depthWrite=false;}
-   else addDesertCamo(mat,m.id*.173);
-     mat.side=T.FrontSide;
-     return mat;
+ wrap.traverse(m=>{if(m.isMesh){m.castShadow=true;const mats=Array.isArray(m.material)?m.material:[m.material];
+   const converted=mats.map(x=>{const n=(x.name||'').toLowerCase();const glass=n.includes('glass')||n.includes('screen');const dark=n.includes('dark')||n.includes('black')||n.includes('darkness')||n==='grey';const camoPatch=(m.id%5===0||m.id%7===0);const c=glass?0x0b334d:(dark?0x1d0d05:(camoPatch?0x251108:0x4a2a0b));
+     return new T.MeshBasicMaterial({map:x.map||null,color:c,transparent:Boolean(x.transparent)||glass,opacity:x.opacity==null?(glass?.88:1):x.opacity,side:T.DoubleSide,depthWrite:!glass});
    });
-   m.material=Array.isArray(m.material)?restored:restored[0];
+   m.material=Array.isArray(m.material)?converted:converted[0];
  }});featureRig=makeRealFeatureRig(wrap);setJet(wrap);
 }
 /* النموذج الواقعي المرفق هو العرض الافتراضي، مع بقاء الاستيراد اليدوي متاحًا. */
